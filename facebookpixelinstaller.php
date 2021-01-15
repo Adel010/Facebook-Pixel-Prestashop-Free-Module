@@ -9,6 +9,8 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+require_once(_PS_MODULE_DIR_ . "facebookpixelinstaller/facebookPixelClass.php");
+
 class Facebookpixelinstaller extends Module implements PrestaShop\PrestaShop\Core\Module\WidgetInterface
 {
     protected $config_form = false;
@@ -60,15 +62,66 @@ class Facebookpixelinstaller extends Module implements PrestaShop\PrestaShop\Cor
         /**
          * If values have been submitted in the form, process.
          */
-        if (((bool)Tools::isSubmit('submitFacebookpixelinstallerModule')) == true) {
-            $this->postProcess();
+        if (((bool)Tools::isSubmit('submit'.$this->name)) == true) {
+            
+            $sql_pixel = 'SELECT * FROM ' . _DB_PREFIX_ . 'facebookpixelinstaller';
+            $query_result = Db::getInstance()->executeS($sql_pixel);
+
+            if(count($query_result) == 0) {
+                $pixel = new facebookPixelClass();
+                $pixel->pixel_id = Tools::getValue('pixel_id');
+                $pixel->save();
+            } else {
+                $pixel = new facebookPixelClass(1);
+                $pixel->pixel_id = Tools::getValue('pixel_id');
+                $pixel->save();
+            }
+
         }
 
-        $this->context->smarty->assign('module_dir', $this->_path);
+        $helperForm = new HelperForm();
+        $helperForm->module = $this;
+        $helperForm->name_controller = $this->name;
+        $helperForm->token = Tools::getAdminTokenLite('AdminModules');
+        $helperForm->currentIndex = AdminController::$currentIndex.'&configure='.$this->name;
+        $helperForm->title = $this->displayName;
+        $helperForm->show_toolbar = true;
+        $helperForm->submit_action = 'submit'.$this->name;
+        $helperForm->toolbar_btn = [
+            'save' => [
+                'desc' => $this->l('Save'),
+                'href' => AdminController::$currentIndex.'&configure='.$this->name.'&save'.$this->name.
+                '&token='.Tools::getAdminTokenLite('AdminModules')
+            ]
+        ];
+        
+        $fieldsForm = array();
+        $fieldsForm[0]['form'] = [
+            'legend' => [
+                'title' => $this->l('Facebook Pixel ID'),
+            ],
+            'input' => [
+                [
+                    'type' => 'text',
+                    'label' => $this->l('Pixel ID'),
+                    'name' => 'pixel_id',
+                    'required' => true
+                ]
+            ]
+        ];
 
-        $output = $this->context->smarty->fetch($this->local_path.'views/templates/admin/configure.tpl');
+        $sql_pixel = 'SELECT * FROM ' . _DB_PREFIX_ . 'facebookpixelinstaller';
+        $query_result = Db::getInstance()->executeS($sql_pixel);
 
-        return $output.$this->renderForm();
+        if(count($query_result) > 0) {
+            $pixel_id = $query_result[0]['pixel_id'];
+            $helperForm->fields_value = array(
+                'pixel_id' => $pixel_id
+            );
+        }
+
+        return $helperForm->generateForm($fieldsForm);
+
     }
 
     public function renderWidget($hookName, array $configuration)
@@ -80,113 +133,15 @@ class Facebookpixelinstaller extends Module implements PrestaShop\PrestaShop\Cor
     public function getWidgetVariables($hookName, array $configuration)
     {
         $pixel_id = "";
+        $sql_pixel = 'SELECT * FROM ' . _DB_PREFIX_ . 'facebookpixelinstaller';
+        $query_result = Db::getInstance()->executeS($sql_pixel);
+
+        if(count($query_result) > 0) {
+            $pixel_id = $query_result[0]['pixel_id'];
+        }
         return array(
             'pixel_id' => $pixel_id
         );
-    }
-
-    /**
-     * Create the form that will be displayed in the configuration of your module.
-     */
-    protected function renderForm()
-    {
-        $helper = new HelperForm();
-
-        $helper->show_toolbar = false;
-        $helper->table = $this->table;
-        $helper->module = $this;
-        $helper->default_form_language = $this->context->language->id;
-        $helper->allow_employee_form_lang = Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG', 0);
-
-        $helper->identifier = $this->identifier;
-        $helper->submit_action = 'submitFacebookpixelinstallerModule';
-        $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false)
-            .'&configure='.$this->name.'&tab_module='.$this->tab.'&module_name='.$this->name;
-        $helper->token = Tools::getAdminTokenLite('AdminModules');
-
-        $helper->tpl_vars = array(
-            'fields_value' => $this->getConfigFormValues(), /* Add values for your inputs */
-            'languages' => $this->context->controller->getLanguages(),
-            'id_language' => $this->context->language->id,
-        );
-
-        return $helper->generateForm(array($this->getConfigForm()));
-    }
-
-    /**
-     * Create the structure of your form.
-     */
-    protected function getConfigForm()
-    {
-        return array(
-            'form' => array(
-                'legend' => array(
-                'title' => $this->l('Settings'),
-                'icon' => 'icon-cogs',
-                ),
-                'input' => array(
-                    array(
-                        'type' => 'switch',
-                        'label' => $this->l('Live mode'),
-                        'name' => 'FACEBOOKPIXELINSTALLER_LIVE_MODE',
-                        'is_bool' => true,
-                        'desc' => $this->l('Use this module in live mode'),
-                        'values' => array(
-                            array(
-                                'id' => 'active_on',
-                                'value' => true,
-                                'label' => $this->l('Enabled')
-                            ),
-                            array(
-                                'id' => 'active_off',
-                                'value' => false,
-                                'label' => $this->l('Disabled')
-                            )
-                        ),
-                    ),
-                    array(
-                        'col' => 3,
-                        'type' => 'text',
-                        'prefix' => '<i class="icon icon-envelope"></i>',
-                        'desc' => $this->l('Enter a valid email address'),
-                        'name' => 'FACEBOOKPIXELINSTALLER_ACCOUNT_EMAIL',
-                        'label' => $this->l('Email'),
-                    ),
-                    array(
-                        'type' => 'password',
-                        'name' => 'FACEBOOKPIXELINSTALLER_ACCOUNT_PASSWORD',
-                        'label' => $this->l('Password'),
-                    ),
-                ),
-                'submit' => array(
-                    'title' => $this->l('Save'),
-                ),
-            ),
-        );
-    }
-
-    /**
-     * Set values for the inputs.
-     */
-    protected function getConfigFormValues()
-    {
-        return array(
-            'FACEBOOKPIXELINSTALLER_LIVE_MODE' => Configuration::get('FACEBOOKPIXELINSTALLER_LIVE_MODE', true),
-            'FACEBOOKPIXELINSTALLER_ACCOUNT_EMAIL' => Configuration::get('FACEBOOKPIXELINSTALLER_ACCOUNT_EMAIL', 'contact@prestashop.com'),
-            'FACEBOOKPIXELINSTALLER_ACCOUNT_PASSWORD' => Configuration::get('FACEBOOKPIXELINSTALLER_ACCOUNT_PASSWORD', null),
-        );
-    }
-
-    /**
-     * Save form data.
-     */
-    protected function postProcess()
-    {
-        $form_values = $this->getConfigFormValues();
-
-        foreach (array_keys($form_values) as $key) {
-            Configuration::updateValue($key, Tools::getValue($key));
-        }
     }
 
     public function hookDisplayHeader()
