@@ -8,8 +8,9 @@
 $sql = array();
 
 $sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'facebookpixelinstaller` (
-    `id_facebookpixelinstaller` int(11) NOT NULL AUTO_INCREMENT,
-    PRIMARY KEY  (`id_facebookpixelinstaller`)
+    `id_facebookpixel` int(11) NOT NULL AUTO_INCREMENT,
+    `pixel_id` int(255) NOT NULL,
+    PRIMARY KEY  (`id_facebookpixel`)
 ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
 
 foreach ($sql as $query) {
