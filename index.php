@@ -2,7 +2,7 @@
 /**
 *  @author    Adel ALIKECHE <adel.alikeche.pro@gmail.com>
 *  @copyright 2021 Adel ALIKECHE
-*  @license   MIT
+*  @license   https://opensource.org/licenses/GPL-3.0  GNU General Public License version 3
 */
 header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
 header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');

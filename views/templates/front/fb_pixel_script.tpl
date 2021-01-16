@@ -1,11 +1,9 @@
 {* 
 *  @author    Adel ALIKECHE <adel.alikeche.pro@gmail.com>
 *  @copyright 2021 Adel ALIKECHE
-*  @license   MIT
+*  @license   https://opensource.org/licenses/GPL-3.0  GNU General Public License version 3
 *}
-<script>
-//test
-</script>
+
 {if $pixel_id}
     {literal}
         <!-- Facebook Pixel Code --> 
@@ -17,11 +15,9 @@
             document,'script','//connect.facebook.net/en_US/fbevents.js'); 
     {/literal}
             fbq('init',{$pixel_id});
-
     {literal}
             fbq('track', 'ViewContent');            
         </script>
-
         <noscript><img height="1" width="1" style="display:none" 
             src="https://www.facebook.com/tr?id=<{$pixel_id}>&ev=PageView&noscript=1" 
             />

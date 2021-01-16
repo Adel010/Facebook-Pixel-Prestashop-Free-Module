@@ -2,7 +2,7 @@
 /**
 *  @author    Adel ALIKECHE <adel.alikeche.pro@gmail.com>
 *  @copyright 2021 Adel ALIKECHE
-*  @license   MIT
+*  @license   https://opensource.org/licenses/GPL-3.0  GNU General Public License version 3
 */
 
 if (!defined('_PS_VERSION_')) {
@@ -54,7 +54,7 @@ class Facebookpixelinstaller extends Module
 
     public function getContent()
     {
-        
+        $_html = '';
         if (((bool)Tools::isSubmit('submit'.$this->name)) == true) {
             
             Configuration::updateValue('facebook_pixel_id', Tools::getValue('pixel_id'));
@@ -121,8 +121,9 @@ class Facebookpixelinstaller extends Module
             'pixel_id' => Configuration::get('facebook_pixel_id'),
             'is_active' => Configuration::get('facebook_pixel_active')
         );
-
-        return $helperForm->generateForm($fieldsForm);
+        $_html .= $helperForm->generateForm($fieldsForm);
+        $_html .= '<p>Get the latest version on <a href="https://github.com/Adel010/Facebook-Pixel-Prestashop-Free-Module">GitHub</a> | <a href="mailto:adel.alikeche.pro@gmail.com">Contact the developer</a></p>';
+        return $_html;
 
     }
 
