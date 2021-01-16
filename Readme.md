@@ -2,6 +2,10 @@
 
 A free open source PrestaShop module that allows you to easly install Facebook Pixel in PrestaShop.
 
+## Download
+
+[Latest releases version (0.0.1)](https://github.com/Adel010/Facebook-Pixel-Prestashop-Free-Module/releases/tag/0.0.1)
+
 ## Installation
 
 - Download the release ZIP file.
