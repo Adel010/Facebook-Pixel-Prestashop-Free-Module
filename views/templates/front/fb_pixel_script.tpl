@@ -3,7 +3,10 @@
 *  @copyright 2021 Adel ALIKECHE
 *  @license   MIT
 *}
-{if $pixel_id != ""}
+<script>
+//test
+</script>
+{if $pixel_id}
     {literal}
         <!-- Facebook Pixel Code --> 
         <script> 

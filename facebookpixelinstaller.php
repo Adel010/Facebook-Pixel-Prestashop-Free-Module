@@ -9,12 +9,8 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-require_once(_PS_MODULE_DIR_ . "facebookpixelinstaller/facebookPixelClass.php");
-
-class Facebookpixelinstaller extends Module implements PrestaShop\PrestaShop\Core\Module\WidgetInterface
+class Facebookpixelinstaller extends Module
 {
-    protected $config_form = false;
-    private $front_template_file;
 
     public function __construct()
     {
@@ -33,17 +29,16 @@ class Facebookpixelinstaller extends Module implements PrestaShop\PrestaShop\Cor
 
         $this->confirmUninstall = $this->l('Are you sure that you want to remove the Facebook pixel from your shop ?');
 
-        $this->ps_versions_compliancy = array('min' => '1.7', 'max' => _PS_VERSION_);
-        $this->front_template_file = 'module:customshippingcost/views/templates/front/fb_pixel_script.tpl';
+        $this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
     }
 
     public function install()
     {
         Configuration::updateValue('FACEBOOKPIXELINSTALLER_LIVE_MODE', false);
 
-        include(dirname(__FILE__).'/sql/install.php');
-
         return parent::install() &&
+            Configuration::updateValue('facebook_pixel_id', '') &&
+            Configuration::updateValue('facebook_pixel_active', true) &&
             $this->registerHook('displayHeader');
     }
 
@@ -51,32 +46,23 @@ class Facebookpixelinstaller extends Module implements PrestaShop\PrestaShop\Cor
     {
         Configuration::deleteByName('FACEBOOKPIXELINSTALLER_LIVE_MODE');
 
-        include(dirname(__FILE__).'/sql/uninstall.php');
-
-        return parent::uninstall();
+        return parent::uninstall() &&
+        Configuration::deleteByName('facebook_pixel_id') &&
+        Configuration::deleteByName('facebook_pixel_active');
     }
 
 
     public function getContent()
     {
-        /**
-         * If values have been submitted in the form, process.
-         */
+        
         if (((bool)Tools::isSubmit('submit'.$this->name)) == true) {
             
-            $sql_pixel = 'SELECT * FROM ' . _DB_PREFIX_ . 'facebookpixelinstaller';
-            $query_result = Db::getInstance()->executeS($sql_pixel);
-
-            if(count($query_result) == 0) {
-                $pixel = new facebookPixelClass();
-                $pixel->pixel_id = Tools::getValue('pixel_id');
-                $pixel->save();
+            Configuration::updateValue('facebook_pixel_id', Tools::getValue('pixel_id'));
+            if(Tools::getValue('is_active') == 0) {
+                Configuration::updateValue('facebook_pixel_active', false);
             } else {
-                $pixel = new facebookPixelClass(1);
-                $pixel->pixel_id = Tools::getValue('pixel_id');
-                $pixel->save();
+                Configuration::updateValue('facebook_pixel_active', true);
             }
-
         }
 
         $helperForm = new HelperForm();
@@ -106,46 +92,49 @@ class Facebookpixelinstaller extends Module implements PrestaShop\PrestaShop\Cor
                     'label' => $this->l('Pixel ID'),
                     'name' => 'pixel_id',
                     'required' => true
+                ],
+                [
+                    'type' => 'radio',
+                    'label' => $this->l('Use the Facebook Pixel'),
+                    'name' => 'is_active',
+                    'values' => array(
+                        array(
+                            'id' => 'active_on',
+                            'value' => 1,
+                            'label' => $this->l('Yes')
+                        ),
+                        array(
+                            'id' => 'active_off',
+                            'value' => 0,
+                            'label' => $this->l('No')
+                        )
+                    )
                 ]
+            ],
+            'submit' => [
+                'title' => $this->l('Save'),
+                'class' => 'btn btn-default pull-right'
             ]
         ];
 
-        $sql_pixel = 'SELECT * FROM ' . _DB_PREFIX_ . 'facebookpixelinstaller';
-        $query_result = Db::getInstance()->executeS($sql_pixel);
-
-        if(count($query_result) > 0) {
-            $pixel_id = $query_result[0]['pixel_id'];
-            $helperForm->fields_value = array(
-                'pixel_id' => $pixel_id
-            );
-        }
+        $helperForm->fields_value = array(
+            'pixel_id' => Configuration::get('facebook_pixel_id'),
+            'is_active' => Configuration::get('facebook_pixel_active')
+        );
 
         return $helperForm->generateForm($fieldsForm);
 
     }
 
-    public function renderWidget($hookName, array $configuration)
-    {
-        $this->smarty->assign($this->getWidgetVariables($hookName, $configuration));
-        return $this->fetch($this->front_template_file);
-    }
-
-    public function getWidgetVariables($hookName, array $configuration)
-    {
-        $pixel_id = "";
-        $sql_pixel = 'SELECT * FROM ' . _DB_PREFIX_ . 'facebookpixelinstaller';
-        $query_result = Db::getInstance()->executeS($sql_pixel);
-
-        if(count($query_result) > 0) {
-            $pixel_id = $query_result[0]['pixel_id'];
-        }
-        return array(
-            'pixel_id' => $pixel_id
-        );
-    }
-
     public function hookDisplayHeader()
     {
-        /* Place your code here. */
+        if(Configuration::get('facebook_pixel_id') != '' && Configuration::get('facebook_pixel_active')) {
+            $this->context->smarty->assign(
+                array(
+                    'pixel_id' => Configuration::get('facebook_pixel_id'),
+                )
+            );
+        }
+        return $this->display(__FILE__, 'fb_pixel_script.tpl');        
     }
 }
