@@ -129,10 +129,26 @@ class Facebookpixelinstaller extends Module
 
     public function hookDisplayHeader()
     {
+        $pid = "";
+        $price = "";
+        $categories = "";
+        if($this->context->controller->getPageName() == "product") {
+            $pid = Tools::getValue("id_product");
+            $price = Product::getPriceStatic($pid);
+            $cat_arr = Product::getProductCategoriesFull($pid);
+            foreach($cat_arr as $cat) {
+                $categories .= $cat['name'] . ' > ';
+            }
+            $categories = substr($categories, 0, (strlen($categories) - 4));
+        }
         if(Configuration::get('facebook_pixel_id') != '' && Configuration::get('facebook_pixel_active')) {
             $this->context->smarty->assign(
                 array(
                     'pixel_id' => Configuration::get('facebook_pixel_id'),
+                    'page_name' => $this->context->controller->getPageName(),
+                    'product_id' => $pid,
+                    'product_price' => $price,
+                    'cat' => $categories
                 )
             );
         }
