@@ -94,7 +94,7 @@ class Facebookpixelinstaller extends Module
                     'required' => true
                 ],
                 [
-                    'type' => 'radio',
+                    'type' => 'switch',
                     'label' => $this->l('Use the Facebook Pixel'),
                     'name' => 'is_active',
                     'values' => array(

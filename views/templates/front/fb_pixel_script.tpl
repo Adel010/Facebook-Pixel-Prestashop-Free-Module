@@ -19,6 +19,7 @@
         fbq('init',{$pixel_id});
         fbq('track', 'PageView');
     {if $page_name eq 'product'}
+        // product page view event
         fbq('track', 'ViewContent', {ldelim}
             content_name: prestashop.page.meta.title,
             content_category : '{$cat}'.replace(/&gt;/g, '>'),
@@ -27,7 +28,29 @@
             value: {$product_price},
             currency: prestashop.currency.iso_code
         {rdelim});
-    {/if}            
+    {/if}
+    {literal}
+        window.onload = function(){
+            let initCount = prestashop.cart.products.length;
+            console.log(initCount, "catched");
+            prestashop.addListener("updateCart", function(){
+                console.log("event fired");
+                if(prestashop.cart.products.length > initCount){
+                    console.log("condition passed");
+                    let fbpatcp = prestashop.cart.products[initCount];
+                    console.log(fbpatcp);
+                    fbq('track', 'AddToCart', {
+                        content_name: fbpatcp.name,
+                        content_category: fbpatcp.category,
+                        content_ids: [parsInt(fbpatcp.id)],
+                        content_type: 'product',
+                        value: fbpatcp.price_with_reduction,
+                        currency: prestashop.currency.iso_code
+                    });
+                }
+            });
+        }
+    {/literal}
         </script>
         <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=<{$pixel_id}>&ev=PageView&noscript=1"/>
         </noscript> 
