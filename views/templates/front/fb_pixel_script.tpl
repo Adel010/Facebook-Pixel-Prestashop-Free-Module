@@ -18,7 +18,7 @@
     {/literal}
         fbq('init',{$pixel_id});
         fbq('track', 'PageView');
-    {if $page_name eq 'product'}
+    {if $page_name eq 'product' and $view_product}
         // product page view event
         fbq('track', 'ViewContent', {ldelim}
             content_name: prestashop.page.meta.title,
@@ -29,7 +29,8 @@
             currency: prestashop.currency.iso_code
         {rdelim});
     {/if}
-    {literal}
+    {if $addtocart}
+        {literal}
         window.onload = function(){
             let initCount = prestashop.cart.products.length;
             console.log(initCount, "catched");
@@ -42,7 +43,7 @@
                     fbq('track', 'AddToCart', {
                         content_name: fbpatcp.name,
                         content_category: fbpatcp.category,
-                        content_ids: [parsInt(fbpatcp.id)],
+                        content_ids: [parseInt(fbpatcp.id)],
                         content_type: 'product',
                         value: fbpatcp.price_with_reduction,
                         currency: prestashop.currency.iso_code
@@ -50,9 +51,11 @@
                 }
             });
         }
-    {/literal}
+        {/literal}
+    {/if}
         </script>
         <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=<{$pixel_id}>&ev=PageView&noscript=1"/>
         </noscript> 
-            <!-- End Facebook Pixel Code --> 
+            <!-- Facebook Pixel Installer PrestaShop free module : https://github.com/Adel010/Facebook-Pixel-Prestashop-Free-Module -->
+            <!-- End Facebook Pixel Code -->
 {/if}

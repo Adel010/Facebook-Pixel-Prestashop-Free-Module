@@ -16,7 +16,7 @@ class Facebookpixelinstaller extends Module
     {
         $this->name = 'facebookpixelinstaller';
         $this->tab = 'advertising_marketing';
-        $this->version = '0.0.1';
+        $this->version = '0.0.2';
         $this->author = 'Adel Alikeche';
         $this->need_instance = 1;
 
@@ -39,6 +39,8 @@ class Facebookpixelinstaller extends Module
         return parent::install() &&
             Configuration::updateValue('facebook_pixel_id', '') &&
             Configuration::updateValue('facebook_pixel_active', true) &&
+            Configuration::updateValue('facebook_event_contentview_active', false) &&
+            Configuration::updateValue('facebook_event_addtocart_active', false) &&
             $this->registerHook('displayHeader');
     }
 
@@ -48,6 +50,8 @@ class Facebookpixelinstaller extends Module
 
         return parent::uninstall() &&
         Configuration::deleteByName('facebook_pixel_id') &&
+        Configuration::deleteByName('facebook_event_contentview_active') &&
+        Configuration::deleteByName('facebook_event_addtocart_active') &&
         Configuration::deleteByName('facebook_pixel_active');
     }
 
@@ -57,11 +61,26 @@ class Facebookpixelinstaller extends Module
         $_html = '';
         if (((bool)Tools::isSubmit('submit'.$this->name)) == true) {
             
-            Configuration::updateValue('facebook_pixel_id', Tools::getValue('pixel_id'));
+            if(Tools::getValue('pixel_id') === '') {
+                $_html .= '<div class="alert alert-danger" role="alert"><p class="alert-text">Please eneter your Facebook Pixel ID then save.</p></div>';
+            } else {
+                Configuration::updateValue('facebook_pixel_id', Tools::getValue('pixel_id'));
+            }
+            
             if(Tools::getValue('is_active') == 0) {
                 Configuration::updateValue('facebook_pixel_active', false);
             } else {
                 Configuration::updateValue('facebook_pixel_active', true);
+            }
+            if(Tools::getValue('product_active') == 0) {
+                Configuration::updateValue('facebook_event_contentview_active', false);
+            } else {
+                Configuration::updateValue('facebook_event_contentview_active', true);
+            }
+            if(Tools::getValue('addtocart_active') == 0) {
+                Configuration::updateValue('facebook_event_addtocart_active', false);
+            } else {
+                Configuration::updateValue('facebook_event_addtocart_active', true);
             }
         }
 
@@ -84,19 +103,54 @@ class Facebookpixelinstaller extends Module
         $fieldsForm = array();
         $fieldsForm[0]['form'] = [
             'legend' => [
-                'title' => $this->l('Facebook Pixel ID'),
+                'title' => $this->l('Facebook Pixel configuration'),
             ],
             'input' => [
                 [
                     'type' => 'text',
                     'label' => $this->l('Pixel ID'),
                     'name' => 'pixel_id',
+                    'placeholder' => 'Enter your Pixel ID',
                     'required' => true
                 ],
                 [
                     'type' => 'switch',
                     'label' => $this->l('Use the Facebook Pixel'),
                     'name' => 'is_active',
+                    'values' => array(
+                        array(
+                            'id' => 'active_on',
+                            'value' => 1,
+                            'label' => $this->l('Yes')
+                        ),
+                        array(
+                            'id' => 'active_off',
+                            'value' => 0,
+                            'label' => $this->l('No')
+                        )
+                    )
+                        ],
+                [
+                    'type' => 'switch',
+                    'label' => $this->l('Use contentView event (product page view)'),
+                    'name' => 'product_active',
+                    'values' => array(
+                        array(
+                            'id' => 'active_on',
+                            'value' => 1,
+                            'label' => $this->l('Yes')
+                        ),
+                        array(
+                            'id' => 'active_off',
+                            'value' => 0,
+                            'label' => $this->l('No')
+                        )
+                    )
+                ],
+                [
+                    'type' => 'switch',
+                    'label' => $this->l('Use addToCart event'),
+                    'name' => 'addtocart_active',
                     'values' => array(
                         array(
                             'id' => 'active_on',
@@ -119,7 +173,9 @@ class Facebookpixelinstaller extends Module
 
         $helperForm->fields_value = array(
             'pixel_id' => Configuration::get('facebook_pixel_id'),
-            'is_active' => Configuration::get('facebook_pixel_active')
+            'is_active' => Configuration::get('facebook_pixel_active'),
+            'product_active' => Configuration::get('facebook_event_contentview_active'),
+            'addtocart_active' => Configuration::get('facebook_event_addtocart_active')
         );
         $_html .= $helperForm->generateForm($fieldsForm);
         $_html .= '<p>Get the latest version on <a href="https://github.com/Adel010/Facebook-Pixel-Prestashop-Free-Module">GitHub</a> | <a href="mailto:adel.alikeche.pro@gmail.com">Contact the developer</a></p>';
@@ -145,6 +201,8 @@ class Facebookpixelinstaller extends Module
             $this->context->smarty->assign(
                 array(
                     'pixel_id' => Configuration::get('facebook_pixel_id'),
+                    'view_product' => Configuration::get('facebook_event_contentview_active'),
+                    'addtocart' => Configuration::get('facebook_event_addtocart_active'),
                     'page_name' => $this->context->controller->getPageName(),
                     'product_id' => $pid,
                     'product_price' => $price,
