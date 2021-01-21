@@ -2,7 +2,7 @@
 <module>
 	<name>facebookpixelinstaller</name>
 	<displayName><![CDATA[Facebook Pixel Installer]]></displayName>
-	<version><![CDATA[0.0.1]]></version>
+	<version><![CDATA[0.0.2]]></version>
 	<description><![CDATA[Add the facebook pixel to your shop for free.]]></description>
 	<author><![CDATA[Adel Alikeche]]></author>
 	<tab><![CDATA[advertising_marketing]]></tab>
