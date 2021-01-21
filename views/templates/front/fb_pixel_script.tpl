@@ -19,7 +19,6 @@
         fbq('init',{$pixel_id});
         fbq('track', 'PageView');
     {if $page_name eq 'product' and $view_product}
-        // product page view event
         fbq('track', 'ViewContent', {ldelim}
             content_name: prestashop.page.meta.title,
             content_category : '{$cat}'.replace(/&gt;/g, '>'),
@@ -51,6 +50,9 @@
     {/if}
     {if $page_name eq 'order-confirmation' and  $order_total}
         fbq('track', 'Purchase', {ldelim}currency: prestashop.currency.iso_code, value: {$order_total}{rdelim});
+    {/if}
+    {if $page_name eq 'contact' and $contact}
+        fbq('track', 'Contact');
     {/if}
         </script>
         <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=<{$pixel_id}>&ev=PageView&noscript=1"/>
