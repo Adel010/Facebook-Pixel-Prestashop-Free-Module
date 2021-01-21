@@ -4,7 +4,7 @@ A free open source PrestaShop module that allows you to easly install Facebook P
 
 ## Download
 
-[Latest releases version (0.0.1)](https://github.com/Adel010/Facebook-Pixel-Prestashop-Free-Module/releases/tag/0.0.1)
+[Latest releases version (0.0.2)](https://github.com/Adel010/Facebook-Pixel-Prestashop-Free-Module/releases/tag/0.0.2)
 
 ## Installation
 
