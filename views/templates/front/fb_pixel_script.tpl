@@ -55,7 +55,7 @@
         fbq('track', 'Contact');
     {/if}
     {if $page_name eq 'search' and $search}
-        fbq('track', 'Search', {ldelim}search_string: {$search_str}{rdelim});
+        fbq('track', 'Search', {ldelim}search_string: "{$search_str}"{rdelim});
     {/if}
         </script>
         <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=<{$pixel_id}>&ev=PageView&noscript=1"/>
