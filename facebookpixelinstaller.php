@@ -41,6 +41,7 @@ class Facebookpixelinstaller extends Module
             Configuration::updateValue('facebook_pixel_active', true) &&
             Configuration::updateValue('facebook_event_contentview_active', false) &&
             Configuration::updateValue('facebook_event_addtocart_active', false) &&
+            Configuration::updateValue('facebook_event_purchase_active', false) &&
             $this->registerHook('displayHeader');
     }
 
@@ -52,6 +53,7 @@ class Facebookpixelinstaller extends Module
         Configuration::deleteByName('facebook_pixel_id') &&
         Configuration::deleteByName('facebook_event_contentview_active') &&
         Configuration::deleteByName('facebook_event_addtocart_active') &&
+        Configuration::deleteByName('facebook_event_purchase_active') &&
         Configuration::deleteByName('facebook_pixel_active');
     }
 
@@ -82,6 +84,12 @@ class Facebookpixelinstaller extends Module
             } else {
                 Configuration::updateValue('facebook_event_addtocart_active', true);
             }
+            if(Tools::getValue('purchase_active') == 0) {
+                Configuration::updateValue('facebook_event_purchase_active', false);
+            } else {
+                Configuration::updateValue('facebook_event_purchase_active', true);
+            }
+            
         }
 
         $helperForm = new HelperForm();
@@ -132,7 +140,7 @@ class Facebookpixelinstaller extends Module
                         ],
                 [
                     'type' => 'switch',
-                    'label' => $this->l('Use contentView event (product page view)'),
+                    'label' => $this->l('Use ViewContent event (product page view)'),
                     'name' => 'product_active',
                     'values' => array(
                         array(
@@ -163,6 +171,23 @@ class Facebookpixelinstaller extends Module
                             'label' => $this->l('No')
                         )
                     )
+                ],
+                [
+                    'type' => 'switch',
+                    'label' => $this->l('Use Purchase event'),
+                    'name' => 'purchase_active',
+                    'values' => array(
+                        array(
+                            'id' => 'active_on',
+                            'value' => 1,
+                            'label' => $this->l('Yes')
+                        ),
+                        array(
+                            'id' => 'active_off',
+                            'value' => 0,
+                            'label' => $this->l('No')
+                        )
+                    )
                 ]
             ],
             'submit' => [
@@ -175,7 +200,8 @@ class Facebookpixelinstaller extends Module
             'pixel_id' => Configuration::get('facebook_pixel_id'),
             'is_active' => Configuration::get('facebook_pixel_active'),
             'product_active' => Configuration::get('facebook_event_contentview_active'),
-            'addtocart_active' => Configuration::get('facebook_event_addtocart_active')
+            'addtocart_active' => Configuration::get('facebook_event_addtocart_active'),
+            'purchase_active' => Configuration::get('facebook_event_purchase_active')
         );
         $_html .= $helperForm->generateForm($fieldsForm);
         $_html .= '<p>Get the latest version on <a href="https://github.com/Adel010/Facebook-Pixel-Prestashop-Free-Module">GitHub</a> | <a href="mailto:adel.alikeche.pro@gmail.com">Contact the developer</a></p>';
@@ -185,9 +211,10 @@ class Facebookpixelinstaller extends Module
 
     public function hookDisplayHeader()
     {
-        $pid = "";
-        $price = "";
-        $categories = "";
+        $pid = '';
+        $price = 0;
+        $categories = '';
+        $order_total = 0;
         if($this->context->controller->getPageName() == "product") {
             $pid = Tools::getValue("id_product");
             $price = Product::getPriceStatic($pid);
@@ -196,6 +223,10 @@ class Facebookpixelinstaller extends Module
                 $categories .= $cat['name'] . ' > ';
             }
             $categories = substr($categories, 0, (strlen($categories) - 4));
+        }
+        if($this->context->controller->getPageName() == 'order-confirmation' && Tools::isSubmit('id_order') && Configuration::get('facebook_event_purchase_active')) {
+            $order = new Order((int)Tools::getValue('id_order'));
+            $order_total = $order->total_paid;
         }
         if(Configuration::get('facebook_pixel_id') != '' && Configuration::get('facebook_pixel_active')) {
             $this->context->smarty->assign(
@@ -206,7 +237,8 @@ class Facebookpixelinstaller extends Module
                     'page_name' => $this->context->controller->getPageName(),
                     'product_id' => $pid,
                     'product_price' => $price,
-                    'cat' => $categories
+                    'cat' => $categories,
+                    'order_total' => $order_total
                 )
             );
         }

@@ -33,13 +33,9 @@
         {literal}
         window.onload = function(){
             let initCount = prestashop.cart.products.length;
-            console.log(initCount, "catched");
             prestashop.addListener("updateCart", function(){
-                console.log("event fired");
                 if(prestashop.cart.products.length > initCount){
-                    console.log("condition passed");
                     let fbpatcp = prestashop.cart.products[initCount];
-                    console.log(fbpatcp);
                     fbq('track', 'AddToCart', {
                         content_name: fbpatcp.name,
                         content_category: fbpatcp.category,
@@ -52,6 +48,9 @@
             });
         }
         {/literal}
+    {/if}
+    {if $page_name eq 'order-confirmation' and  $order_total}
+        fbq('track', 'Purchase', {ldelim}currency: prestashop.currency.iso_code, value: {$order_total}{rdelim});
     {/if}
         </script>
         <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=<{$pixel_id}>&ev=PageView&noscript=1"/>
