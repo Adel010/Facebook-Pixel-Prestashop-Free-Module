@@ -261,17 +261,17 @@ class Facebookpixelinstaller extends Module
 
     public function hookDisplayHeader()
     {
-        $pid = '';
+        $pid = 0;
         $price = 0;
         $categories = '';
         $order_total = 0;
         $search_str = '';
         if($this->context->controller->getPageName() == "product") {
-            $pid = Tools::getValue("id_product");
-            $price = Product::getPriceStatic($pid);
-            $cat_arr = Product::getProductCategoriesFull($pid);
+            $pid = $this->context->smarty->getTemplateVars()['product']['id'];
+            $price = $this->context->smarty->getTemplateVars()['product']['price_amount'];
+            $cat_arr = $this->context->smarty->getTemplateVars()['breadcrumb']['links'];
             foreach($cat_arr as $cat) {
-                $categories .= $cat['name'] . ' > ';
+                $categories .= $cat['title'] . ' > ';
             }
             $categories = substr($categories, 0, (strlen($categories) - 4));
         }
@@ -295,7 +295,7 @@ class Facebookpixelinstaller extends Module
                     'order_total' => $order_total,
                     'contact' => Configuration::get('facebook_event_contact_active'),
                     'search' => Configuration::get('facebook_event_search_active'),
-                    'search_str' => $search_str
+                    'search_str' => $search_str,
                 )
             );
         }
