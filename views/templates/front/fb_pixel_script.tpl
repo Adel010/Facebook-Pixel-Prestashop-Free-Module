@@ -1,7 +1,7 @@
 {* 
 *  @author    Adel ALIKECHE <adel.alikeche.pro@gmail.com>
 *  @copyright 2021 Adel ALIKECHE
-*  @license   https://opensource.org/licenses/GPL-3.0  GNU General Public License version 3
+*  @license   https://opensource.org/licenses/AFL-3.0  Academic Free License ("AFL") v. 3.0
 *}
 {if $pixel_id}
     {literal}
