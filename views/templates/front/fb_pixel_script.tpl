@@ -30,11 +30,11 @@
     {/if}
     {if $addtocart}
         {literal}
-        window.onload = function(){
-            let initCount = prestashop.cart.products.length;
+        window.addEventListener('load', function(){
+            let initCountFbPx = prestashop.cart.products.length;
             prestashop.addListener("updateCart", function(){
-                if(prestashop.cart.products.length > initCount){
-                    let fbpatcp = prestashop.cart.products[initCount];
+                if(prestashop.cart.products.length > initCountFbPx){
+                    let fbpatcp = prestashop.cart.products[initCountFbPx];
                     fbq('track', 'AddToCart', {
                         content_name: fbpatcp.name,
                         content_category: fbpatcp.category,
@@ -45,7 +45,7 @@
                     });
                 }
             });
-        }
+        });
         {/literal}
     {/if}
     {if $page_name eq 'order-confirmation' and  $order_total}
