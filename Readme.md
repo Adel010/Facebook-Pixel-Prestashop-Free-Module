@@ -1,6 +1,7 @@
 # Facebook Pixel Installer
 
 A free open source PrestaShop module that allows you to easly install Facebook Pixel in PrestaShop.
+
 Facebook events handled :
 - ViewContent (for products view, it sends to facebook all the required informations about the product being viewed by the client).
 - addToCart (it sends to facebook all the required informations about the product added to the cart by the client)
