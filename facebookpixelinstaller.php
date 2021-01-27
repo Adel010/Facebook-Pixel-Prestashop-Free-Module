@@ -44,6 +44,7 @@ class Facebookpixelinstaller extends Module
             Configuration::updateValue('facebook_event_purchase_active', true) &&
             Configuration::updateValue('facebook_event_contact_active', true) &&
             Configuration::updateValue('facebook_event_search_active', true) &&
+            Configuration::updateValue('facebook_event_initcheckout_active', true) &&
             $this->registerHook('displayHeader');
     }
 
@@ -102,6 +103,11 @@ class Facebookpixelinstaller extends Module
                 Configuration::updateValue('facebook_event_search_active', false);
             } else {
                 Configuration::updateValue('facebook_event_search_active', true);
+            }
+            if(Tools::getValue('initiatecheckout_active') == 0) {
+                Configuration::updateValue('facebook_event_initcheckout_active', false);
+            } else {
+                Configuration::updateValue('facebook_event_initcheckout_active', true);
             }
             
         }
@@ -188,6 +194,23 @@ class Facebookpixelinstaller extends Module
                 ],
                 [
                     'type' => 'switch',
+                    'label' => $this->l('Use InitiateCheckout event'),
+                    'name' => 'initiatecheckout_active',
+                    'values' => array(
+                        array(
+                            'id' => 'active_on',
+                            'value' => 1,
+                            'label' => $this->l('Yes')
+                        ),
+                        array(
+                            'id' => 'active_off',
+                            'value' => 0,
+                            'label' => $this->l('No')
+                        )
+                    )
+                ],
+                [
+                    'type' => 'switch',
                     'label' => $this->l('Use Purchase event'),
                     'name' => 'purchase_active',
                     'values' => array(
@@ -251,7 +274,8 @@ class Facebookpixelinstaller extends Module
             'addtocart_active' => Configuration::get('facebook_event_addtocart_active'),
             'purchase_active' => Configuration::get('facebook_event_purchase_active'),
             'contact_active' => Configuration::get('facebook_event_contact_active'),
-            'search_active' => Configuration::get('facebook_event_search_active')
+            'search_active' => Configuration::get('facebook_event_search_active'),
+            'initiatecheckout_active' => Configuration::get('facebook_event_initcheckout_active')
         );
         $_html .= $helperForm->generateForm($fieldsForm);
         $_html .= '<p>Get the latest version on <a href="https://github.com/Adel010/Facebook-Pixel-Prestashop-Free-Module">GitHub</a> | <a href="mailto:adel.alikeche.pro@gmail.com">Contact the developer</a></p>';
@@ -296,6 +320,7 @@ class Facebookpixelinstaller extends Module
                     'contact' => Configuration::get('facebook_event_contact_active'),
                     'search' => Configuration::get('facebook_event_search_active'),
                     'search_str' => $search_str,
+                    'checkout' => Configuration::get('facebook_event_initcheckout_active')
                 )
             );
         }

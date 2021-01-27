@@ -49,7 +49,26 @@
         {/literal}
     {/if}
     {if $page_name eq 'order-confirmation' and  $order_total}
-        fbq('track', 'Purchase', {ldelim}currency: prestashop.currency.iso_code, value: {$order_total}{rdelim});
+        fbq('track', 'Purchase', {ldelim}
+            content_type: 'product',
+            content_ids: prestashop.cart.products.map(p => p.id),
+            contents: prestashop.cart.products.map(p => {ldelim}return {ldelim}'id': p.id, 'quantity' : p.quantity_wanted{rdelim}{rdelim}),
+            num_items: prestashop.cart.products_count,
+            currency: prestashop.currency.iso_code,
+            value: {$order_total}
+            {rdelim}
+        );
+    {/if}
+    {if $page_name eq 'checkout' and  $checkout}
+        fbq('track', 'InitiateCheckout', {ldelim}
+            content_type: 'product',
+            content_ids: prestashop.cart.products.map(p => p.id),
+            contents: prestashop.cart.products.map(p => {ldelim}return {ldelim}'id': p.id, 'quantity' : p.quantity_wanted{rdelim}{rdelim}),
+            num_items: prestashop.cart.products_count,
+            currency: prestashop.currency.iso_code,
+            value: prestashop.cart.totals.total.amount
+            {rdelim}
+        );
     {/if}
     {if $page_name eq 'contact' and $contact}
         fbq('track', 'Contact');
