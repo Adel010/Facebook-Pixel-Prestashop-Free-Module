@@ -3,7 +3,7 @@
 *  @copyright 2021 Adel ALIKECHE
 *  @license   https://opensource.org/licenses/AFL-3.0  Academic Free License ("AFL") v. 3.0
 *}
-{if $pixel_id}
+{if isset($pixel_id)}
     {literal}
         <!-- Facebook Pixel Code --> 
     <script> 
@@ -51,20 +51,27 @@
     {if $page_name eq 'order-confirmation' and  $order_total}
         fbq('track', 'Purchase', {ldelim}
             content_type: 'product',
-            content_ids: prestashop.cart.products.map(p => p.id),
-            contents: prestashop.cart.products.map(p => {ldelim}return {ldelim}'id': p.id, 'quantity' : p.quantity_wanted{rdelim}{rdelim}),
-            num_items: prestashop.cart.products_count,
             currency: prestashop.currency.iso_code,
             value: {$order_total}
             {rdelim}
         );
     {/if}
-    {if $page_name eq 'checkout' and  $checkout}
+    {if $page_name eq 'checkout' and  $checkout and $checkout_step eq 'checkout-addresses-step'}
         fbq('track', 'InitiateCheckout', {ldelim}
             content_type: 'product',
             content_ids: prestashop.cart.products.map(p => p.id),
             contents: prestashop.cart.products.map(p => {ldelim}return {ldelim}'id': p.id, 'quantity' : p.quantity_wanted{rdelim}{rdelim}),
             num_items: prestashop.cart.products_count,
+            currency: prestashop.currency.iso_code,
+            value: prestashop.cart.totals.total.amount
+            {rdelim}
+        );
+    {/if}
+    {if $page_name eq 'checkout' and  $paymentinfo and $checkout_step eq 'checkout-payment-step'}
+        fbq('track', 'AddPaymentInfo', {ldelim}
+            content_type: 'product',
+            content_ids: prestashop.cart.products.map(p => p.id),
+            contents: prestashop.cart.products.map(p => {ldelim}return {ldelim}'id': p.id, 'quantity' : p.quantity_wanted{rdelim}{rdelim}),
             currency: prestashop.currency.iso_code,
             value: prestashop.cart.totals.total.amount
             {rdelim}
@@ -81,3 +88,4 @@
         <!-- Facebook Pixel Installer PrestaShop free module : https://github.com/Adel010/Facebook-Pixel-Prestashop-Free-Module -->
         <!-- End Facebook Pixel Code -->
 {/if}
+<p>{$page_name}</p>
