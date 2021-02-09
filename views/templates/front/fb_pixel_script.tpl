@@ -88,4 +88,3 @@
         <!-- Facebook Pixel Installer PrestaShop free module : https://github.com/Adel010/Facebook-Pixel-Prestashop-Free-Module -->
         <!-- End Facebook Pixel Code -->
 {/if}
-<p>{$page_name}</p>
