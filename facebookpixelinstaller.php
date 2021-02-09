@@ -58,6 +58,8 @@ class Facebookpixelinstaller extends Module
         Configuration::deleteByName('facebook_event_addtocart_active') &&
         Configuration::deleteByName('facebook_event_purchase_active') &&
         Configuration::deleteByName('facebook_event_contact_active') &&
+        Configuration::deleteByName('facebook_event_initcheckout_active') &&
+        Configuration::deleteByName('facebook_event_addpaymentinfo_active') &&
         Configuration::deleteByName('facebook_event_search_active') &&
         Configuration::deleteByName('facebook_pixel_active');
     }
