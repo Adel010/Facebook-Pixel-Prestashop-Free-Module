@@ -201,7 +201,7 @@ class Facebookpixelinstaller extends Module
                 ],
                 [
                     'type' => 'switch',
-                    'label' => $this->l('Use InitiateCheckout event (PS v1.7.7.1 or later only)'),
+                    'label' => $this->l('Use InitiateCheckout event (PS v1.7.7.0 or later only)'),
                     'name' => 'initiatecheckout_active',
                     'values' => array(
                         array(
@@ -218,7 +218,7 @@ class Facebookpixelinstaller extends Module
                 ],
                 [
                     'type' => 'switch',
-                    'label' => $this->l('Use AddPaymentInfo event (PS v1.7.7.1 or later only)'),
+                    'label' => $this->l('Use AddPaymentInfo event (PS v1.7.7.0 or later only)'),
                     'name' => 'addpaymentinfo_active',
                     'values' => array(
                         array(
