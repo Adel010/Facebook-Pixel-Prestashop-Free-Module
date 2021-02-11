@@ -355,13 +355,13 @@ class Facebookpixelinstaller extends Module
     }
     public function getCheckoutStepFromContext($context)
     {
-        if($context->controller instanceof \OrderControllerCore && $context->controller->getCheckoutProcess() !== null) {
+        if($context->controller instanceof \OrderControllerCore && method_exists($context->controller, 'getCheckoutProcess')) {
             foreach($context->controller->getCheckoutProcess()->getSteps() as $idStep => $step){
                 if($step->isCurrent()) {
                     return $step->getIdentifier();
                 }
             }
         }
-        return null;
+        return array();
     }
 }
