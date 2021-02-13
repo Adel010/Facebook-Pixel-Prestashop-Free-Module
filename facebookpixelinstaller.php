@@ -28,7 +28,7 @@ class Facebookpixelinstaller extends Module
 
         $this->confirmUninstall = $this->l('Are you sure that you want to remove the Facebook pixel from your shop ?');
 
-        $this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
+        $this->ps_versions_compliancy = array('min' => '1.7', 'max' => _PS_VERSION_);
     }
 
     public function install()
