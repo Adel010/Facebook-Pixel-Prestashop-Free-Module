@@ -268,7 +268,8 @@ class Facebookpixelinstaller extends Module
         $search_str = '';
         if($this->context->controller->getPageName() == "product") {
             $pid = Tools::getValue("id_product");
-            $price = Product::getPriceStatic($pid);
+            $id_prod_attr = Tools::getValue('id_product_attribute', 0);
+            $price = Product::getPriceStatic($pid, true, $id_prod_attr);
             $cat_arr = Product::getProductCategoriesFull($pid);
             foreach($cat_arr as $cat) {
                 $categories .= $cat['name'] . ' > ';
