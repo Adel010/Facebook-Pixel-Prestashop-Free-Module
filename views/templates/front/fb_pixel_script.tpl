@@ -3,7 +3,7 @@
 *  @copyright 2021 Adel ALIKECHE
 *  @license   https://opensource.org/licenses/AFL-3.0  Academic Free License ("AFL") v. 3.0
 *}
-{if isset($pixel_id)}
+{if $px_is_active and isset($pixel_id)}
     {literal}
         <!-- Facebook Pixel Code --> 
     <script> 
@@ -31,19 +31,15 @@
     {if $addtocart}
         {literal}
         window.addEventListener('load', function(){
-            let initCountFbPx = prestashop.cart.products.length;
-            prestashop.addListener("updateCart", function(){
-                if(prestashop.cart.products.length > initCountFbPx){
-                    let fbpatcp = prestashop.cart.products[initCountFbPx];
-                    fbq('track', 'AddToCart', {
-                        content_name: fbpatcp.name,
-                        content_category: fbpatcp.category,
-                        content_ids: [parseInt(fbpatcp.id)],
-                        content_type: 'product',
-                        value: fbpatcp.price_with_reduction,
-                        currency: prestashop.currency.iso_code
-                    });
-                }
+            prestashop.addListener("updateCart", function(e){
+                fbq('track', 'AddToCart', {
+                    content_name: e.reason.cart.products.find(product => pruduct.id == e.reason.idProduct).name,
+                    content_category: temp1.reason.cart.products.find(p => p.id == temp1.reason.idProduct).category,
+                    content_ids: [e.reason.idProduct],
+                    content_type: 'product',
+                    value: temp1.reason.cart.products.find(p => p.id == temp1.reason.idProduct).price_wt,
+                    currency: prestashop.currency.iso_code
+                });
             });
         });
         {/literal}

@@ -334,6 +334,7 @@ class Facebookpixelinstaller extends Module
         if(Configuration::get('facebook_pixel_id') != '' && Configuration::get('facebook_pixel_active')) {
             $this->context->smarty->assign(
                 array(
+                    'px_is_active' => Configuration::get('facebook_pixel_active'),
                     'pixel_id' => Configuration::get('facebook_pixel_id'),
                     'view_product' => Configuration::get('facebook_event_contentview_active'),
                     'addtocart' => Configuration::get('facebook_event_addtocart_active'),
