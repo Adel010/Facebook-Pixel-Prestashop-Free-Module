@@ -33,11 +33,11 @@
         window.addEventListener('load', function(){
             prestashop.addListener("updateCart", function(e){
                 fbq('track', 'AddToCart', {
-                    content_name: e.reason.cart.products.find(product => pruduct.id == e.reason.idProduct).name,
-                    content_category: temp1.reason.cart.products.find(p => p.id == temp1.reason.idProduct).category,
+                    content_name: e.reason.cart.products.find(p => p.id == e.reason.idProduct).name,
+                    content_category: e.reason.cart.products.find(p => p.id == e.reason.idProduct).category,
                     content_ids: [e.reason.idProduct],
                     content_type: 'product',
-                    value: temp1.reason.cart.products.find(p => p.id == temp1.reason.idProduct).price_wt,
+                    value: e.reason.cart.products.find(p => p.id == e.reason.idProduct).price_wt,
                     currency: prestashop.currency.iso_code
                 });
             });
