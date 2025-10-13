@@ -31,15 +31,20 @@
     {if $addtocart}
         {literal}
         window.addEventListener('load', function(){
+            let init_products_count = prestashop.cart.products_count;
             prestashop.addListener("updateCart", function(e){
-                fbq('track', 'AddToCart', {
-                    content_name: e.reason.cart.products.find(p => p.id == e.reason.idProduct).name,
-                    content_category: e.reason.cart.products.find(p => p.id == e.reason.idProduct).category,
-                    content_ids: [e.reason.idProduct],
-                    content_type: 'product',
-                    value: e.reason.cart.products.find(p => p.id == e.reason.idProduct).price_wt,
-                    currency: prestashop.currency.iso_code
-                });
+                if(e.reason.cart.products_count > init_products_count){
+                    const prod = e.reason.cart.products.find(p => p.id == e.reason.idProduct);
+                    fbq('track', 'AddToCart', {
+                        content_name: prod.name,
+                        content_category: prod.category,
+                        content_ids: [e.reason.idProduct],
+                        content_type: 'product',
+                        contents: [{'id' : e.reason.idProduct, 'quantity': Number(prod.quantity_wanted), 'attributes' : prod.attributes}],
+                        value: prod.price_wt,
+                        currency: prestashop.currency.iso_code
+                    });
+                }
             });
         });
         {/literal}
