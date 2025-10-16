@@ -57,7 +57,7 @@
             {rdelim}
         );
     {/if}
-    {if $page_name eq 'checkout' and  $checkout and $checkout_step eq 'checkout-addresses-step'}
+    {if $page_name eq 'checkout' and  $checkout and $checkout_step eq 'checkout-personal-information-step'}
         fbq('track', 'InitiateCheckout', {ldelim}
             content_type: 'product',
             content_ids: prestashop.cart.products.map(p => p.id),
