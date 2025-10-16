@@ -327,6 +327,19 @@ class Facebookpixelinstaller extends Module
         if($this->context->controller->getPageName() == 'order-confirmation' && Tools::isSubmit('id_order') && Configuration::get('facebook_event_purchase_active')) {
             $order = new Order((int)Tools::getValue('id_order'));
             $order_total = $order->total_paid;
+            $orderProds = $order->getProducts();
+            $orderContents = [];
+            $orderContent_ids = [];
+            foreach($orderProds as $prod){
+                $orderContents[] = [
+                    'id' => (string)$prod['id_product'],
+                    'product_name' => $prod['product_name'],
+                    'product_attribute_id' => $prod['product_attribute_id'],
+                    'quantity' => $prod['product_quantity'],
+                    'item_price' => $prod['unit_price_tax_incl']
+                ];
+                $orderContent_ids[] = (string)$prod['id_product'];
+            }
         }
         if(Tools::getValue('controller') === "search") {
             $search_str = Tools::getValue('s');
@@ -348,7 +361,9 @@ class Facebookpixelinstaller extends Module
                     'search_str' => $search_str,
                     'checkout' => Configuration::get('facebook_event_initcheckout_active'),
                     'paymentinfo' => Configuration::get('facebook_event_addpaymentinfo_active'),
-                    'checkout_step' => $this->getCheckoutStepFromContext($this->context)
+                    'checkout_step' => $this->getCheckoutStepFromContext($this->context),
+                    'order_contents' => $orderContents,
+                    'order_content_ids' => $orderContent_ids
                 )
             );
         }

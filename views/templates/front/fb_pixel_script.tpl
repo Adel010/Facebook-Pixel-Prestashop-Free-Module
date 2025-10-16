@@ -50,12 +50,17 @@
         {/literal}
     {/if}
     {if $page_name eq 'order-confirmation' and  $order_total}
-        fbq('track', 'Purchase', {ldelim}
-            content_type: 'product',
-            currency: prestashop.currency.iso_code,
-            value: {$order_total}
+        {strip}
+            fbq('track', 'Purchase', {ldelim}
+                content_type: 'product',
+                content_ids: [{foreach from=$order_content_ids item=id name=ids}"{$id|escape:'javascript' nofilter}"{if !$smarty.foreach.ids.last},{/if}{/foreach}],
+                contents: [{foreach from=$order_contents item=item name=items}{ldelim}id: {$item.id|intval},product_name: "{$item.product_name|escape:'javascript'}",product_attribute_id: {$item.product_attribute_id|intval},quantity: {$item.quantity|intval},item_price: {$item.item_price|floatval}{rdelim}{if !$smarty.foreach.items.last},{/if}{/foreach}],
+                num_items: {count($order_content_ids)},
+                currency: prestashop.currency.iso_code,
+                value: {$order_total}
             {rdelim}
-        );
+            );
+        {/strip}
     {/if}
     {if $page_name eq 'checkout' and  $checkout and $checkout_step eq 'checkout-personal-information-step'}
         fbq('track', 'InitiateCheckout', {ldelim}
