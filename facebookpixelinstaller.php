@@ -312,17 +312,13 @@ class Facebookpixelinstaller extends Module
     {
         $pid = 0;
         $price = 0;
-        $categories = '';
+        $product_category = '';
         $order_total = 0;
         $search_str = '';
         if($this->context->controller->getPageName() == "product") {
             $pid = $this->context->smarty->getTemplateVars()['product']['id'];
             $price = $this->context->smarty->getTemplateVars()['product']['price_amount'];
-            $cat_arr = $this->context->smarty->getTemplateVars()['breadcrumb']['links'];
-            foreach($cat_arr as $cat) {
-                $categories .= $cat['title'] . ' > ';
-            }
-            $categories = substr($categories, 0, (strlen($categories) - 4));
+            $product_category = $this->context->smarty->getTemplateVars()['product']['category'];
         }
         if($this->context->controller->getPageName() == 'order-confirmation' && Tools::isSubmit('id_order') && Configuration::get('facebook_event_purchase_active')) {
             $order = new Order((int)Tools::getValue('id_order'));
@@ -354,7 +350,7 @@ class Facebookpixelinstaller extends Module
                     'page_name' => $this->context->controller->getPageName(),
                     'product_id' => $pid,
                     'product_price' => $price,
-                    'cat' => $categories,
+                    'product_category' => $product_category,
                     'order_total' => $order_total,
                     'contact' => Configuration::get('facebook_event_contact_active'),
                     'search' => Configuration::get('facebook_event_search_active'),

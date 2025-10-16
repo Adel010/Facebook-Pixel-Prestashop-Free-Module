@@ -21,7 +21,7 @@
     {if $page_name eq 'product' and $view_product}
         fbq('track', 'ViewContent', {ldelim}
             content_name: prestashop.page.meta.title,
-            content_category : '{$cat}'.replace(/&gt;/g, '>'),
+            content_category : "{$product_category}",
             content_type: 'product',
             content_ids: [{$product_id}],
             value: {$product_price},
@@ -66,7 +66,7 @@
         fbq('track', 'InitiateCheckout', {ldelim}
             content_type: 'product',
             content_ids: prestashop.cart.products.map(p => p.id),
-            contents: prestashop.cart.products.map(p => {ldelim}return {ldelim}'id': p.id, 'quantity' : p.quantity_wanted{rdelim}{rdelim}),
+            contents: prestashop.cart.products.map(p => {ldelim}return {ldelim}'id': p.id, 'quantity' : p.quantity{rdelim}{rdelim}),
             num_items: prestashop.cart.products_count,
             currency: prestashop.currency.iso_code,
             value: prestashop.cart.totals.total.amount
@@ -77,7 +77,7 @@
         fbq('track', 'AddPaymentInfo', {ldelim}
             content_type: 'product',
             content_ids: prestashop.cart.products.map(p => p.id),
-            contents: prestashop.cart.products.map(p => {ldelim}return {ldelim}'id': p.id, 'quantity' : p.quantity_wanted{rdelim}{rdelim}),
+            contents: prestashop.cart.products.map(p => {ldelim}return {ldelim}'id': p.id, 'quantity' : p.quantity{rdelim}{rdelim}),
             currency: prestashop.currency.iso_code,
             value: prestashop.cart.totals.total.amount
             {rdelim}
