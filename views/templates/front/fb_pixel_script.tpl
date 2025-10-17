@@ -38,9 +38,9 @@
                     fbq('track', 'AddToCart', {
                         content_name: prod.name,
                         content_category: prod.category,
-                        content_ids: [e.reason.idProduct],
+                        content_ids: [prod.id],
                         content_type: 'product',
-                        contents: [{'id' : e.reason.idProduct, 'quantity': Number(prod.quantity_wanted), 'attributes' : prod.attributes}],
+                        contents: [{'id' : prod.id, 'quantity': Number(prod.quantity_wanted), 'attributes' : prod.attributes}],
                         value: prod.price_wt,
                         currency: prestashop.currency.iso_code
                     });
